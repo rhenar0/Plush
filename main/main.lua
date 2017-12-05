@@ -8,9 +8,12 @@ client:on('ready', function()
 
     file = io.open('data_ia.txt', 'wb')
 
+    TT = 0
 end)
 
 client:on('messageCreate', function(message)
+
+    author = message.author.id
 
     if (message.content == 'Bonjour plush') or (message.content == 'Bonjour Plush') or (message.content == 'bonjour Plush') or (message.content == 'Salut plush') or (message.content == 'salut plush') or (message.content == 'Salut plush') or (message.content == 'salut Plush') or (message.content == 'bjr plush') or (message.content == 'hey plush') or (message.content == 'Hey plush') or (message.content == 'Hey Plush') or (message.content == 'Bonsoir Plush') or (message.content == 'bonsoir Plush') or (message.content == 'bonsoir plush') or (message.content == 'Bonsoir Plush') then
         local time = os.date("*t")
@@ -20,10 +23,10 @@ client:on('messageCreate', function(message)
         elseif time.hour <= 12  then
             message.channel:send('Bonjour '..message.author.name..' !')
             return
-        elseif time.hour >= 13 then
+        elseif time.hour <= 18 then
             message.channel:send('Bonne après-midi '..message.author.name..' !')
             return
-        elseif time.hour >= 18  then
+        elseif time.hour <= 24  then
             message.channel:send('Bonsoir '..message.author.name..' !')
             return
         end
@@ -46,10 +49,54 @@ client:on('messageCreate', function(message)
         end
     end
 
-    
+    if (message.content == "!msg") then
+        if TT == 0 then
+            TT = 1
+            perso = message.author.id
+        end
+    end
+
+    if (message.content == "!leavemsg") then
+        if TT == 1 then
+            TT = 0
+        end
+    end
+
+    if TT == 1 then
+        local text = message.content
+        local plush = "387293113472909324"
+        if (message.author.id == (perso)) then
+            message.channel:send(text)
+        elseif (message.author.id == (plush)) then
+            return
+        end
+    end
+
+    if (message.content == 'ballais couilles') or (message.content == 'Ballais couilles') then
+        message.channel:send('http://forevershowtroll.f.o.pic.centerblog.net/3fd08591.jpg')
+    end
+
+    if (message.content == 'ça va plush ?') or (message.content == 'Comment ça va Plush ?') or (message.content == 'ça va Plush ?') then
+        message.channel:send('Je pète la forme !')
+    end
 
     if message.content == 'Qui est plush ?' then
         message.channel:send('Hey ! Je suis Plush, une mini-IA qui se développe au fil du temps :3 J ai reçu une petite modification qui me permet d apprendre via un enregistrement constant des conversations !')
+    end
+
+    if (message.content == 'Love you Plush') or (message.content == "Je t'aime Plush") or (message.content == "je t'aime plush") or (message.content == "je t'aime Plush") or (message.content == "Je t'aime Plush") then
+        local rhenar = "173731309120651264"
+        local haku = "205033396303298571"
+        local patate = "349657602902458368"
+        if message.author.id == (rhenar) then
+            message.channel:send("Je peux pas t'aimer... tu es mon père !")
+        elseif message.author.id == (haku) then
+            message.channel:send("Je peux pas t'aimer... tu as déjà Patate Licorne Unijambiste !")
+        elseif message.author.id == (patate) then
+            message.channel:send("Je peux pas t'aimer... tu as déjà Haku !")
+        else
+            message.channel:send("Moi aussi je t'aime "..message.author.name.." !")
+        end
     end
 
     if (message.content == 'Plush ?') or (message.content == 'plush ?') then
