@@ -43,6 +43,10 @@ end)
 
 plush:on('messageCreate', function(message)
 
+    if (message.author.bot == true) then
+        return
+    end
+    
     author = message.author.id
 
     if (message.content == 'Bonjour plush') or (message.content == 'Bonjour Plush') or (message.content == 'bonjour Plush') or (message.content == 'Salut plush') or (message.content == 'salut plush') or (message.content == 'Salut plush') or (message.content == 'salut Plush') or (message.content == 'bjr plush') or (message.content == 'hey plush') or (message.content == 'Hey plush') or (message.content == 'Hey Plush') or (message.content == 'Bonsoir Plush') or (message.content == 'bonsoir Plush') or (message.content == 'bonsoir plush') or (message.content == 'Bonsoir Plush') then
@@ -169,6 +173,9 @@ plush:on('messageCreate', function(message)
     -- APPRENDS VIA MSG
 
     function learn(cmd,phrase)
+        if cmd ~= "?" then
+            cmd = cmd:gsub("%?", "ù$")
+        end
         learnfile = io.open("learn/"..cmd..".txt", 'wb')
         learnfile:write(phrase)
         learnfile:close()
@@ -211,8 +218,13 @@ plush:on('messageCreate', function(message)
         end
     end
 
-    if (io.open("learn/"..message.content..".txt", 'rb')) then
-        readlearn = io.open("learn/"..message.content..".txt", "rb")
+    if (message.content ~= "?") then
+        chatcontent = message.content
+        chatcontent = chatcontent:gsub("%?", "ù$")
+    end
+
+    if (io.open("learn/"..chatcontent..".txt", 'rb')) then
+        readlearn = io.open("learn/"..chatcontent..".txt", "rb")
         local content = readlearn:read "*a"
         message.channel:send(content)
     else
