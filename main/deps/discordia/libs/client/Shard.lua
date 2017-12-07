@@ -30,8 +30,8 @@ local DISPATCH              = 0
 local HEARTBEAT             = 1
 local IDENTIFY              = 2
 local STATUS_UPDATE         = 3
--- local VOICE_STATE_UPDATE = 4 -- TODO
--- local VOICE_SERVER_PING = 5 -- TODO
+-- local VOICE_STATE_UPDATE = 4 --
+-- local VOICE_SERVER_PING = 5 --
 local RESUME                = 6
 local RECONNECT             = 7
 local REQUEST_GUILD_MEMBERS = 8
@@ -103,7 +103,7 @@ function Shard:connect(url, token)
 		self:handlePayloads(token)
 		self:info('Disconnected')
 	else
-		self:error('Could not connect to %s (%s)', url, res) -- TODO: get new url?
+		self:error('Could not connect to %s (%s)', url, res)
 	end
 
 	if self._reconnect then

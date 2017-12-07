@@ -209,7 +209,7 @@ function API:commit(method, url, req, payload, retries)
 		if type(data) == 'table' then
 
 			local retry
-			if res.code == 429 then -- TODO: global ratelimiting
+			if res.code == 429 then
 				delay = data.retry_after
 				retry = retries < options.maxRetries
 			elseif res.code == 502 then

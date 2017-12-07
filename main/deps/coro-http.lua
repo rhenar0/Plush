@@ -141,7 +141,6 @@ local function request(method, url, headers, body)
       connection.socket:close()
     end
     -- If we get an immediate close on a reused socket, try again with a new socket.
-    -- TODO: think about if this could resend requests with side effects and cause
     -- them to double execute in the remote server.
     if connection.reused then
       return request(method, url, headers, body)

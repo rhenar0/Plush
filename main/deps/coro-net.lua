@@ -114,7 +114,6 @@ local function connect(options)
   local read, write, close = wrapStream(dsocket)
   local updateDecoder, updateEncoder
   if options.scan then
-    -- TODO: Should we expose updateScan somehow?
     read = merger(read, options.scan)
   end
   if options.decode then
@@ -154,7 +153,6 @@ local function createServer(options, onConnect)
         local read, write = wrapStream(dsocket)
         local updateDecoder, updateEncoder
         if options.scan then
-          -- TODO: should we expose updateScan somehow?
           read = merger(read, options.scan)
         end
         if options.decode then

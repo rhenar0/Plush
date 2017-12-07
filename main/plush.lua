@@ -1,17 +1,47 @@
-local discordia = require('discordia')
-local client = discordia.Client()
+PlushVersion = "0.1"
 
+discordia = require('discordia')
+colorize = require('pretty-print').colorize
+fs = require('fs')
+timer = require('timer')
+plush = discordia.Client()
+http = require('http')
+json = require('json')
+http1 = require('coro-http')
 
-client:on('ready', function()
+InCDWood = {}
+InCDIron = {}
+InCDStone = {}
 
-    print('Connecté sous: '.. client.user.username)
+function date()
+    return os.date("[%d.%m.%y][%X]")
+end
+
+function printLog(text, logType)
+    logType = string.upper(logType or "INFO")
+    local logColors = {INFO = "string", LOG = "string", WARN = "highlight", DEBUG = "highlight", ERR = "err", FAIL = "failure", FAILURE = "failure"}
+    print(colorize(logColors[logType] or "string", "'"..date().."["..logType.."] "..text.."'"))
+    local logfile = io.open("plush.log", a)
+    if logfile then
+        logfile:write(date().."["..logType.."] "..text.."\n")
+        logfile:close()
+    else
+        print(colorize('failure', "'"..date().."[ERR] Impossible d'ouvrir le fichier log !'"))
+    end
+end
+
+plush:on('ready', function()
+
+    print('Connecte sous: '.. plush.user.username)
 
     file = io.open('data_ia.txt', 'wb')
 
     TT = 0
+    APPMODE = 0
+    COMMAND_APP = 0
 end)
 
-client:on('messageCreate', function(message)
+plush:on('messageCreate', function(message)
 
     author = message.author.id
 
@@ -72,7 +102,7 @@ client:on('messageCreate', function(message)
         end
     end
 
-    if (message.content == 'ballais couilles') or (message.content == 'Ballais couilles') then
+    if (message.content == 'balais couille') or (message.content == 'Balais couille') then
         message.channel:send('http://forevershowtroll.f.o.pic.centerblog.net/3fd08591.jpg')
     end
 
@@ -82,6 +112,10 @@ client:on('messageCreate', function(message)
 
     if message.content == 'Qui est plush ?' then
         message.channel:send('Hey ! Je suis Plush, une mini-IA qui se développe au fil du temps :3 J ai reçu une petite modification qui me permet d apprendre via un enregistrement constant des conversations !')
+    end
+
+    if (message.content == 'Pardon') or (message.content == 'pardon') then
+        message.channel:send('https://cdn.discordapp.com/attachments/356666260878131212/388054582363815946/msg-134404023599.jpg')
     end
 
     if (message.content == 'Love you Plush') or (message.content == "Je t'aime Plush") or (message.content == "je t'aime plush") or (message.content == "je t'aime Plush") or (message.content == "Je t'aime Plush") then
@@ -115,23 +149,76 @@ client:on('messageCreate', function(message)
         message.channel:send('https://e621.net/')
     end
 
+    if (message.content == 'Gros câlin Plush') or (message.content == 'gros câlin Plush') or (message.content == 'Gros câlin plush') or (message.content == 'gros câlin plush') then
+        message.channel:send('*Prends dans mes bras '..message.author.name..' et le sert fort contre moi*')
+    end
+
     if message.content == '!boop' then
         message.channel:send('Owwwww * ^ * Tu m as boupé '..message.author.name)
     end
 
-    --if message.content == 'Les commandes de Plush' then
-        --message.channel:send('Je peux répondre à : Plush ? | A plush | Non rien plush | !boop | Bonne nuit Plush | Bonjour/Bonsoir Plush | yiff | Qui est plush ? |')
-    --end
-
-    if message.content == 'Kechua' then
-        message.channel:send('Baisse toi et souffre claquement de gant en plastique')
+    if message.content == 'Les commandes de Plush' then
+        message.channel:send('Je peux répondre à : Plush ? | A plush | Non rien plush | !boop | Bonne nuit Plush | Bonjour/Bonsoir Plush | yiff | Qui est plush ? |')
     end
 
-     file = io.open('data_ia.txt', 'r+')
-     file:seek("end", 0)
-     file:write(message.author.name..": "..message.content.."  ("..message.author.id.." / "..os.clock().." | "..os.date("%m/%d/%Y")..")", "\n")
-     file:close()
+    --if (message.content == 'Kechua') then
+        --message.channel:send('Baisse toi et souffre claquement de gant en plastique')
+    --end
+
+
+    -- APPRENDS VIA MSG
+
+    function learn(cmd,phrase)
+        learnfile = io.open("learn/"..cmd..".txt", 'wb')
+        learnfile:write(phrase)
+        learnfile:close()
+    end
+
+    if message.content == 'Plush apprends !' then
+        if APPMODE == 0 then
+            APPMODE = 1
+            master = message.author.id
+            print("OK : APPMODE BY "..message.author.name)
+            message.channel:send("Pas de soucis ! Le prochain message sera destiné à la commande et le second le texte que je dois retenir !")
+            return
+        elseif APPMODE == 1 then
+            message.channel:send("Je peux pas apprendre pour l'instant "..message.author.id.." :S")
+            return
+        end
+    end
+
+    if APPMODE == 1 then
+        if (COMMAND_APP == 0) and master == message.author.id then
+            newcommand = message.content
+            if newcommand == "!leavep" then
+                print("OK : LEAVE BY "..message.author.name)
+                return
+            end
+            COMMAND_APP = 1
+            message.channel:send("Super maintenant le second message pour le texte que je devrais dire !")
+        elseif (COMMAND_APP == 1) and master ==  message.author.id then
+            newphrase = message.content
+            if newphrase == "!leavep" then
+                print("OK : LEAVE BY "..message.author.name)
+                return
+            end
+            COMMAND_APP = 0
+            learn(newcommand,newphrase)
+            APPMODE = 0
+            print("FIN : APPMODE BY "..message.author.name)
+
+            message.channel:send("Wow merci, c'était très instructif donc à chaque fois que je verrais: '"..newcommand.."' Je dirais: '"..newphrase.."'")
+        end
+    end
+
+    if (io.open("learn/"..message.content..".txt", 'rb')) then
+        readlearn = io.open("learn/"..message.content..".txt", "rb")
+        local content = readlearn:read "*a"
+        message.channel:send(content)
+    else
+        return
+    end
 
 end)
 
-client:run('Bot Mzg3MjkzMTEzNDcyOTA5MzI0.DQdNRw.yV86tNPU7excUBNW6NGQnkG8vfI')
+plush:run('Bot Mzg3MjkzMTEzNDcyOTA5MzI0.DQrM9A.3GV2M1RwZJbBEEAi-fJnmetRsYo')

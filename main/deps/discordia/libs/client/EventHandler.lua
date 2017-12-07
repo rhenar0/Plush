@@ -499,7 +499,7 @@ function EventHandler.VOICE_STATE_UPDATE(d, client)
 	end
 end
 
-function EventHandler.VOICE_SERVER_UPDATE() -- TODO
+function EventHandler.VOICE_SERVER_UPDATE()
 end
 
 function EventHandler.WEBHOOKS_UPDATE(d, client) -- webhook object is not provided

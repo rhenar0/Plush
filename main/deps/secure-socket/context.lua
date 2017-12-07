@@ -80,7 +80,6 @@ return function (options)
     local first = table.remove(cert, 1)
     assert(ctx:use(key, first))
     if #cert > 0 then
-      -- TODO: find out if there is a way to not need to duplicate the last cert here
       -- as a dummy fill for the root CA cert
       assert(ctx:add(cert[#cert], cert))
     end
